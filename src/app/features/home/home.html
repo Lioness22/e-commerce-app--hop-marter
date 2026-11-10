@@ -1,0 +1,90 @@
+<!-- Hero Section -->
+<section class="hero-section">
+  <div class="container">
+    <div class="row align-items-center">
+
+      <div class="col-md-7">
+        <span class="badge bg-primary mb-3">
+          Welcome to ShopSmart
+        </span>
+
+        <h1 class="display-4 fw-bold">
+          Discover Products.
+          <span class="text-primary">Shop Smarter.</span>
+        </h1>
+
+        <p class="lead text-secondary mt-3">
+          Find the right products with intelligent AI-powered
+          shopping assistance.
+        </p>
+
+        <button class="btn btn-primary btn-lg mt-3">
+          Explore Products
+        </button>
+      </div>
+
+      <div class="col-md-5 text-center">
+        <img
+          src="/assets/images/commerce.jpg"
+          class="img-fluid rounded"
+          alt="ShopSmart products">
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- Categories -->
+<section class="container my-5">
+  <h2 class="fw-bold mb-4">Shop by Category</h2>
+
+  <div class="row g-3">
+    @for (category of categories; track category) {
+      <div class="col-6 col-md-3">
+        <div class="category-card text-center p-4">
+          {{ category }}
+        </div>
+      </div>
+    }
+  </div>
+</section>
+
+<!-- Featured Products -->
+<section class="container my-5">
+  <h2 class="fw-bold mb-4">Featured Products</h2>
+
+  <div class="row g-4">
+    @for (product of products; track product.id) {
+      <div class="col-12 col-sm-6 col-lg-3">
+
+        <div class="card product-card h-100">
+
+          <img
+            [src]="product.image"
+            class="card-img-top"
+            [alt]="product.name">
+
+          <div class="card-body">
+            <h5 class="card-title">
+              {{ product.name }}
+            </h5>
+
+            <p class="text-secondary">
+              {{ product.category }}
+            </p>
+
+            <h5 class="text-primary">
+              ₹{{ product.price }}
+            </h5>
+
+            <button class="btn btn-outline-primary w-100">
+              View Product
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+    }
+  </div>
+</section>
