@@ -1,0 +1,64 @@
+
+<div class="container py-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h2 class="fw-bold">Explore Products</h2>
+      <p class="text-muted">Find the right products for you.</p>
+    </div>
+  </div>
+  <!-- Search -->
+  <div class="row mb-4">
+    <div class="col-md-6">
+      <input
+        type="text"
+        class="form-control"
+        placeholder="Search products..."
+        [(ngModel)]="searchText">
+    </div>
+  </div>
+  <!-- Categories -->
+  <div class="d-flex flex-wrap gap-2 mb-4">
+    @for (category of categories; track category) {
+      <button
+        class="btn"
+        [class.btn-primary]="selectedCategory === category"
+        [class.btn-outline-primary]="selectedCategory !== category"
+        (click)="selectCategory(category)">
+        {{ category }}
+      </button>
+    }
+  </div>
+  <!-- Products -->
+  <div class="row g-4">
+    @for (product of filteredProducts; track product.id) {
+      <div class="col-md-6 col-lg-4 col-xl-3">
+        <div class="card product-card h-100">
+          <img
+            [src]="product.image"
+            class="card-img-top"
+            [alt]="product.name">
+          <div class="card-body">
+            <span class="badge bg-light text-primary mb-2">
+              {{ product.category }}
+            </span>
+            <h5 class="card-title">{{ product.name }}</h5>
+        <h5 class="text-primary fw-bold">
+              ₹{{ product.price }}
+            </h5>
+            <button
+              class="btn btn-primary w-100 mt-2"
+              (click)="addToCart(product.name)">
+              Add to Cart
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+    @if (filteredProducts.length === 0) {
+      <div class="col-12 text-center py-5">
+        <h5>No products found</h5>
+        <p class="text-muted">Try another search or category.</p>
+      </div>
+    }
+  </div>
+</div>
