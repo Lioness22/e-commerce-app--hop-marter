@@ -21,8 +21,9 @@
         </li>
       </ul>
       <div class="d-flex gap-3 align-items-center">
-        <button class="btn btn-outline-primary">
-          <i class="bi bi-cart"></i> Cart
+        <button class="btn btn-outline-primary" routerLink="/cart">
+          <i class="bi bi-cart"></i> 
+          Cart ({{ (cartCount$ | async) ?? 0 }})
         </button>
         <button class="btn btn-primary">
           Login

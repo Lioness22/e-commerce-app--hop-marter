@@ -1,6 +1,9 @@
 
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { inject } from '@angular/core';
+import { CartService } from '../../core/services/cart';
+
 
 @Component({
   selector: 'app-products',
@@ -9,8 +12,9 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './products.html',
   styleUrl: './products.css'
 })
-export class Products {
 
+export class Products {
+private cartService = inject(CartService);
   searchText = '';
   selectedCategory = 'All';
 
@@ -86,7 +90,15 @@ export class Products {
     this.selectedCategory = category;
   }
 
-  addToCart(productName: string) {
-    alert(productName + ' added to cart!');
-  }
+ addToCart(product: any): void {
+  this.cartService.addToCart({
+    id: product.id,
+    name: product.name,
+    price: product.price,
+    category: product.category,
+    image: product.image
+  });
+
+  alert(product.name + ' added to cart!');
+}
 }
