@@ -37,22 +37,39 @@ export class CartService {
       )
     )
   );
-  addToCart(product: Omit<CartItem, 'quantity'>): void {
-    const items = [...this.cartItems];
+  // addToCart(product: Omit<CartItem, 'quantity'>): void {
+  //   const items = [...this.cartItems];
 
-    const existingItem = items.find(
-      item => item.id === product.id
-    );
+  //   const existingItem = items.find(
+  //     item => item.id === product.id
+  //   );
 
-    if (existingItem) {
-      existingItem.quantity++;
-    } else {
-      items.push({ ...product, quantity: 1 });
-    }
+  //   if (existingItem) {
+  //     existingItem.quantity++;
+  //   } else {
+  //     items.push({ ...product, quantity: 1 });
+  //   }
 
-    this.cartItemsSubject.next(items);
-  }
+  //   this.cartItemsSubject.next(items);
+  // }
+addToCart(
+  product: Omit<CartItem, 'quantity'>,
+  quantity: number = 1
+): void {
+  const existingItem = this.cartItems.find(
+    item => item.id === product.id
+  );
 
+  const items = existingItem
+    ? this.cartItems.map(item =>
+        item.id === product.id
+          ? { ...item, quantity: item.quantity + quantity }
+          : item
+      )
+    : [...this.cartItems, { ...product, quantity }];
+
+  this.cartItemsSubject.next(items);
+}
   updateQuantity(id: number, quantity: number): void {
     const items = this.cartItems
       .map(item =>

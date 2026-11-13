@@ -1,0 +1,15 @@
+.register-card {
+  border: none;
+  border-radius: 16px;
+  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.08);
+}
+
+.form-control {
+  padding: 12px;
+  border-radius: 8px;
+}
+
+.btn-primary {
+  padding: 12px;
+  border-radius: 8px;
+}
