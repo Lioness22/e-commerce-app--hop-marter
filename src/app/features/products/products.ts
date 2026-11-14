@@ -3,7 +3,8 @@ import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { inject } from '@angular/core';
 import { CartService } from '../../core/services/cart';
-import { PRODUCTS } from '../../core/data/products';
+import { ProductService, Product } from '../../core/services/product';
+import {  OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 @Component({
   selector: 'app-products',
@@ -15,9 +16,12 @@ import { RouterLink } from '@angular/router';
 
 export class Products {
 private cartService = inject(CartService);
+private productService = inject(ProductService);
   searchText = '';
   selectedCategory = 'All';
-  products = PRODUCTS;
+  products: Product[] = [];
+  loading = true;
+errorMessage = '';
   categories = [
     'All',
     'Laptops',
@@ -26,6 +30,19 @@ private cartService = inject(CartService);
     'Accessories'
   ];
 
+ngOnInit(): void {
+  this.productService.getProducts().subscribe({
+    next: (response) => {
+      this.products = response.data;
+      this.loading = false;
+    },
+    error: (error) => {
+      console.error('Error fetching products:', error);
+      this.errorMessage = 'Unable to load products. Please try again.';
+      this.loading = false;
+    }
+  });
+}
   // products = [
   //   {
   //     id: 1,
