@@ -8,9 +8,13 @@
         <div class="col-lg-7">
           <div class="card p-4">
             <h4 class="mb-4">Delivery Information</h4>
-
-            <form [formGroup]="checkoutForm" (ngSubmit)="placeOrder()">
-
+           @if (errorMessage) {
+  <div class="alert alert-danger">
+    {{ errorMessage }}
+  </div>
+}
+      <form [formGroup]="checkoutForm" (ngSubmit)="placeOrder()">
+  
               <div class="mb-3">
                 <label class="form-label">Full Name</label>
                 <input class="form-control" formControlName="fullName">
@@ -67,9 +71,12 @@
                 </div>
               </div>
 
-              <button type="submit" class="btn btn-primary w-100 mt-3">
-                Place Order
-              </button>
+             <button
+  type="submit"
+  class="btn btn-primary w-100"
+  [disabled]="loading">
+  {{ loading ? 'Placing Order...' : 'Place Order' }}
+</button>
 
             </form>
           </div>

@@ -6,6 +6,7 @@ import { ProductDetails } from './features/product-details/product-details';
 import { Register } from './features/auth/register/register';
 import { Login } from './features/auth/login/login';
 import { Checkout } from './features/checkout/checkout';
+import { authGuard } from './core/guards/auth-guard';
 export const routes: Routes = [
 {
     path: '',
@@ -16,5 +17,7 @@ export const routes: Routes = [
    { path: 'products/:id', component: ProductDetails },
    { path: 'login', component: Login },
    { path: 'register', component: Register },
-   { path: 'checkout', component: Checkout },
+   { path: 'checkout', component: Checkout ,
+    canActivate: [authGuard]
+   },
 ];

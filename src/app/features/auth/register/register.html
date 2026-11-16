@@ -81,10 +81,10 @@
             </label>
           </div>
 
-          <button type="submit" class="btn btn-primary w-100">
-            Create Account
-          </button>
-
+          <button type="submit" class="btn btn-primary w-100"
+        [disabled]="loading">
+  {{ loading ? 'Registering...' : 'Create Account' }}
+   </button>
         </form>
 
         <p class="text-center mt-4 mb-0">

@@ -54,15 +54,18 @@
               </small>
             }
           </div>
-
-          <button
-            type="submit"
-            class="btn btn-primary w-100 mt-3">
-            Login
-          </button>
-
+@if (errorMessage) {
+  <div class="alert alert-danger">
+    {{ errorMessage }}
+  </div>
+}
+<button
+  type="submit"
+  class="btn btn-primary w-100"
+  [disabled]="loading">
+  {{ loading ? 'Logging in...' : 'Login' }}
+</button>
         </form>
-
         <p class="text-center mt-4 mb-0">
           Don't have an account?
           <a routerLink="/register" class="text-primary fw-bold">

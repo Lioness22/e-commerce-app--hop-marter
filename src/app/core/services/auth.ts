@@ -1,0 +1,46 @@
+
+import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable, tap } from 'rxjs';
+
+export interface LoginResponse {
+  success: boolean;
+  message: string;
+  token: string;
+  user: {
+    id: number;
+    fullName: string;
+    email: string;
+    role: string;
+  };
+}
+
+@Injectable({
+  providedIn: 'root'
+})
+export class Auth {
+  private http = inject(HttpClient);
+
+  private apiUrl = 'http://localhost:5000/api/users';
+
+  login(email: string, password: string): Observable<LoginResponse> {
+    return this.http.post<LoginResponse>(
+      `${this.apiUrl}/login`,
+      { email, password }
+    ).pipe(
+      tap(response => {
+        localStorage.setItem('token', response.token);
+        localStorage.setItem('user', JSON.stringify(response.user));
+      })
+    );
+  }
+
+  getToken(): string | null {
+    return localStorage.getItem('token');
+  }
+
+  logout(): void {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+  }
+}
