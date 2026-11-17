@@ -1,0 +1,7 @@
+.product-image {
+  width: 90px;
+  height: 90px;
+  object-fit: contain;
+  background: #f8f9fa;
+  padding: 5px;
+}

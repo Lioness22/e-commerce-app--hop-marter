@@ -1,0 +1,104 @@
+
+<div class="container py-5">
+  <a routerLink="/my-orders" class="btn btn-outline-secondary mb-4">
+    <i class="bi bi-arrow-left"></i>
+    Back to My Orders
+  </a>
+  @if (loading) {
+    <div class="text-center py-5">
+      <div class="spinner-border text-primary" role="status"></div>
+      <p class="mt-2">Loading order details...</p>
+    </div>
+  }
+  @else if (errorMessage) {
+    <div class="alert alert-danger">
+      {{ errorMessage }}
+    </div>
+  }
+
+  @else if (order) {
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+      <div>
+        <h2 class="fw-bold">Order #{{ order.id }}</h2>
+        <p class="text-muted mb-0">
+          Placed on {{ order.created_at | date:'medium' }}
+        </p>
+      </div>
+
+      <span
+        class="badge fs-6"
+        [class.bg-warning]="order.status === 'pending'"
+        [class.bg-success]="order.status === 'approved'"
+        [class.bg-danger]="order.status === 'rejected'">
+        {{ order.status | titlecase }}
+      </span>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-lg-8">
+        <div class="card border-0 shadow-sm">
+          <div class="card-header bg-white py-3">
+            <h5 class="fw-bold mb-0">Ordered Products</h5>
+          </div>
+          <div class="card-body">
+            @for (item of order.items; track item.product_id) {
+              <div class="row align-items-center py-3 border-bottom">
+                <div class="col-3 col-md-2">
+                  <img
+                    [src]="item.image"
+                    [alt]="item.name"
+                    class="img-fluid rounded product-image">
+                </div>
+                <div class="col-9 col-md-6">
+                  <h6 class="fw-bold">{{ item.name }}</h6>
+                  <p class="text-muted mb-0">
+                    Quantity: {{ item.quantity }}
+                  </p>
+                  <p class="text-muted mb-0">
+                    Unit Price: ₹{{ item.price }}
+                  </p>
+                </div>
+                <div class="col-12 col-md-4 text-md-end mt-2 mt-md-0">
+                  <strong>₹{{ item.subtotal }}</strong>
+                </div>
+
+              </div>
+            }
+
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="card border-0 shadow-sm mb-4">
+          <div class="card-body">
+            <h5 class="fw-bold mb-3">Order Summary</h5>
+            <div class="d-flex justify-content-between mb-2">
+              <span>Total Items</span>
+              <strong>{{ order.items.length }}</strong>
+            </div>
+            <hr>
+            <div class="d-flex justify-content-between">
+              <strong>Total Amount</strong>
+              <h5 class="text-primary fw-bold">
+                ₹{{ order.total_amount }}
+              </h5>
+            </div>
+          </div>
+        </div>
+        <div class="card border-0 shadow-sm">
+          <div class="card-body">
+            <h5 class="fw-bold mb-3">
+              <i class="bi bi-geo-alt"></i>
+              Shipping Address
+            </h5>
+            <p class="text-muted mb-0">
+              {{ order.shipping_address }}
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  }
+</div>
+

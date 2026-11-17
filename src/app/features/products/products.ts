@@ -73,7 +73,8 @@ ngOnInit(): void {
     name: product.name,
     price: product.price,
     category: product.category,
-    image: product.image
+    image: product.image,
+    stock: product.stock
   });
 
   alert(product.name + ' added to cart!');

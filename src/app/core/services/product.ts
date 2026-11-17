@@ -31,4 +31,13 @@ export class ProductService {
   getProducts(): Observable<ProductApiResponse> {
     return this.http.get<ProductApiResponse>(this.apiUrl);
   }
+getProductById(id: number): Observable<{
+  success: boolean;
+  data: Product;
+}> {
+  return this.http.get<{
+    success: boolean;
+    data: Product;
+  }>(`${this.apiUrl}/${id}`);
+}
 }

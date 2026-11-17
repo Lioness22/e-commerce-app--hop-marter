@@ -9,6 +9,7 @@ export interface CartItem {
   category: string;
   image: string;
   quantity: number;
+  stock: number;
 }
 
 @Injectable({
@@ -16,13 +17,14 @@ export interface CartItem {
 })
 export class CartService {
 
-  private cartItemsSubject = new BehaviorSubject<CartItem[]>([]);
-
+  private cartItemsSubject = new BehaviorSubject<CartItem[]>(
+    JSON.parse(localStorage.getItem('cart') || '[]')
+  );
   cartItems$ = this.cartItemsSubject.asObservable();
-
   get cartItems(): CartItem[] {
     return this.cartItemsSubject.value;
   }
+
   totalItems$ = this.cartItems$.pipe(
     map(items =>
       items.reduce((total, item) => total + item.quantity, 0)
@@ -37,55 +39,61 @@ export class CartService {
       )
     )
   );
-  // addToCart(product: Omit<CartItem, 'quantity'>): void {
-  //   const items = [...this.cartItems];
 
-  //   const existingItem = items.find(
-  //     item => item.id === product.id
-  //   );
-
-  //   if (existingItem) {
-  //     existingItem.quantity++;
-  //   } else {
-  //     items.push({ ...product, quantity: 1 });
-  //   }
-
-  //   this.cartItemsSubject.next(items);
-  // }
-addToCart(
-  product: Omit<CartItem, 'quantity'>,
-  quantity: number = 1
-): void {
-  const existingItem = this.cartItems.find(
-    item => item.id === product.id
-  );
-
-  const items = existingItem
-    ? this.cartItems.map(item =>
-        item.id === product.id
-          ? { ...item, quantity: item.quantity + quantity }
-          : item
-      )
-    : [...this.cartItems, { ...product, quantity }];
-
-  this.cartItemsSubject.next(items);
+  addToCart(
+    product: Omit<CartItem, 'quantity'>,
+    quantity: number = 1
+  ): void {
+    const existingItem = this.cartItems.find(
+      item => item.id === product.id
+    );
+    if (product.stock <= 0) {
+  alert('This product is out of stock.');
+  return;
 }
-  updateQuantity(id: number, quantity: number): void {
-    const items = this.cartItems
-      .map(item =>
-        item.id === id ? { ...item, quantity } : item
-      )
-      .filter(item => item.quantity > 0);
 
-    this.cartItemsSubject.next(items);
+if (
+  existingItem &&
+  existingItem.quantity + quantity > product.stock
+) {
+  alert(`Only ${product.stock} units are available.`);
+  return;
+}
+
+if (!existingItem && quantity > product.stock) {
+  alert(`Only ${product.stock} units are available.`);
+  return;
+}
+
+    const items = existingItem
+      ? this.cartItems.map(item =>
+          item.id === product.id
+            ? { ...item, quantity: item.quantity + quantity }
+            : item
+        )
+      : [...this.cartItems, { ...product, quantity }];
+
+    this.saveCart(items);
   }
+updateQuantity(id: number, quantity: number): void {
+  const items = this.cartItems.map(item => {
+    if (item.id === id) {
+      return {
+        ...item,
+        quantity: Math.min(quantity, item.stock)
+      };
+    }
+    return item;
+  }).filter(item => item.quantity > 0);
+
+  this.saveCart(items);
+}
 
   removeFromCart(id: number): void {
     const items = this.cartItems.filter(
       item => item.id !== id
     );
-
-    this.cartItemsSubject.next(items);
+    this.saveCart(items);
   }
 
   getTotalItems(): number {
@@ -99,4 +107,10 @@ addToCart(
       (total, item) => total + item.price * item.quantity, 0
     );
   }
+
+  private saveCart(items: CartItem[]): void {
+    localStorage.setItem('cart', JSON.stringify(items));
+    this.cartItemsSubject.next(items);
+  }
+  
 }

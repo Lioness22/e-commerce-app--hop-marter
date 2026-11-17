@@ -19,13 +19,18 @@ import { map } from 'rxjs';
   styleUrl: './checkout.css'
 })
 export class Checkout {
+
   private fb = inject(FormBuilder);
   private router = inject(Router);
   private orderService = inject(Order);
+
   cartService = inject(CartService);
+
   cartItems$ = this.cartService.cartItems$;
+
   loading = false;
   errorMessage = '';
+
   totalPrice$ = this.cartItems$.pipe(
     map(items =>
       items.reduce(
@@ -36,32 +41,73 @@ export class Checkout {
   );
 
   checkoutForm = this.fb.group({
-    fullName: ['', Validators.required],
-    email: ['', [Validators.required, Validators.email]],
-    phone: ['', [Validators.required, Validators.pattern(/^[0-9]{10}$/)]],
-    address: ['', Validators.required],
-    city: ['', Validators.required],
-    pincode: ['', [Validators.required, Validators.pattern(/^[0-9]{6}$/)]]
+    fullName: ['', [
+      Validators.required,
+      Validators.pattern(/.*\S.*/)
+    ]],
+    email: ['', [
+      Validators.required,
+      Validators.email
+    ]],
+    phone: ['', [
+      Validators.required,
+      Validators.pattern(/^[0-9]{10}$/)
+    ]],
+    address: ['', [
+      Validators.required,
+      Validators.pattern(/.*\S.*/)
+    ]],
+    city: ['', [
+      Validators.required,
+      Validators.pattern(/.*\S.*/)
+    ]],
+    pincode: ['', [
+      Validators.required,
+      Validators.pattern(/^[0-9]{6}$/)
+    ]]
   });
 
   placeOrder(): void {
+
+    if (this.loading) {
+      return;
+    }
+
     this.errorMessage = '';
+
+    // Validate checkout form
     if (this.checkoutForm.invalid) {
       this.checkoutForm.markAllAsTouched();
       return;
     }
+
     const cartItems = this.cartService.cartItems;
+
+    // Validate empty cart
     if (cartItems.length === 0) {
-      alert('Your cart is empty!');
+      this.errorMessage = 'Your cart is empty. Please add products before checkout.';
       return;
     }
+
+    // Validate stock availability
+    const invalidStockItem = cartItems.find(
+      item => item.quantity > item.stock || item.stock <= 0
+    );
+
+    if (invalidStockItem) {
+      this.errorMessage =
+        `Only ${invalidStockItem.stock} units of ${invalidStockItem.name} are available. Please update your cart.`;
+      return;
+    }
+
     const formData = this.checkoutForm.getRawValue();
+
     const shippingAddress = [
-      `Name: ${formData.fullName}`,
-      `Email: ${formData.email}`,
+      `Name: ${formData.fullName?.trim()}`,
+      `Email: ${formData.email?.trim()}`,
       `Phone: ${formData.phone}`,
-      `Address: ${formData.address}`,
-      `City: ${formData.city}`,
+      `Address: ${formData.address?.trim()}`,
+      `City: ${formData.city?.trim()}`,
       `Pincode: ${formData.pincode}`
     ].join(', ');
 
@@ -72,25 +118,35 @@ export class Checkout {
         quantity: item.quantity
       }))
     };
+
     this.loading = true;
+
     this.orderService.placeOrder(orderData).subscribe({
+
       next: (response) => {
+
         this.loading = false;
-        // Clear cart only after successful order creation
+
+        // Clear cart after successful order
         cartItems.forEach(item => {
           this.cartService.removeFromCart(item.id);
         });
+
         alert(
           `Order placed successfully! Order ID: ${response.data.id}`
         );
+
         this.router.navigate(['/']);
       },
 
       error: (error) => {
+
         this.loading = false;
+
         this.errorMessage =
           error.error?.message ||
           'Unable to place your order. Please try again.';
+
         console.error('Order creation error:', error);
       }
     });

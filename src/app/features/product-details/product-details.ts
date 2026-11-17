@@ -1,46 +1,72 @@
-import { Component, inject } from '@angular/core';
+
+import { Component, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ProductService, Product } from '../../core/services/product';
 import { CartService } from '../../core/services/cart';
-import { PRODUCTS, Product } from '../../core/data/products';
 
 @Component({
   selector: 'app-product-details',
   standalone: true,
-  imports: [RouterLink],
+  imports: [CommonModule, RouterLink],
   templateUrl: './product-details.html',
   styleUrl: './product-details.css'
 })
-export class ProductDetails {
+export class ProductDetails implements OnInit {
+
   private route = inject(ActivatedRoute);
+  private productService = inject(ProductService);
   private cartService = inject(CartService);
 
-  product: Product | undefined;
-
+  product: Product | null = null;
+  loading = true;
+  errorMessage = '';
   quantity = 1;
-
-  constructor() {
-    const id = Number(this.route.snapshot.paramMap.get('id'));
-
-    this.product = PRODUCTS.find(item => item.id === id);
-  }
-
-  increaseQuantity(): void {
-    this.quantity++;
-  }
-
-  decreaseQuantity(): void {
-    if (this.quantity > 1) {
-      this.quantity--;
-    }
-  }
-
-  addToCart(): void {
-    if (!this.product) {
+  ngOnInit(): void {
+    const productId = Number(
+      this.route.snapshot.paramMap.get('id')
+    );
+    if (!Number.isSafeInteger(productId) || productId <= 0) {
+      this.errorMessage = 'Invalid product ID.';
+      this.loading = false;
       return;
     }
 
-    this.cartService.addToCart(this.product, this.quantity);
+    this.productService.getProductById(productId).subscribe({
+      next: (response) => {
+        this.product = response.data;
+        this.loading = false;
+      },
+      error: (error) => {
+        console.error('Product details error:', error);
+        this.errorMessage =
+          error.error?.message || 'Unable to load product details.';
+        this.loading = false;
+      }
+    });
+  }
 
+  addToCart(): void {
+    if (!this.product) return;
+    this.cartService.addToCart({
+      id: this.product.id,
+      name: this.product.name,
+      price: this.product.price,
+      category: this.product.category,
+      image: this.product.image,
+      stock: this.product.stock
+    }, this.quantity);
     alert(this.product.name + ' added to cart!');
   }
+
+increaseQuantity(): void {
+  if (this.product && this.quantity < this.product.stock) {
+    this.quantity++;
+  }
+}
+decreaseQuantity(): void {
+  if (this.quantity > 1) {
+    this.quantity--;
+  }
+}
 }

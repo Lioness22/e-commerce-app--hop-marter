@@ -92,3 +92,71 @@ export const createOrder = async (
     client.release();
   }
 };
+
+
+export const getOrdersByUserId = async (userId) => {
+  const result = await pool.query(
+    `SELECT
+       o.id,
+       o.total_amount,
+       o.status,
+       o.shipping_address,
+       o.created_at,
+       COUNT(oi.id)::INTEGER AS total_items
+     FROM orders o
+     LEFT JOIN order_items oi
+       ON o.id = oi.order_id
+     WHERE o.user_id = $1
+     GROUP BY o.id
+     ORDER BY o.created_at DESC`,
+    [userId]
+  );
+
+  return result.rows;
+};
+
+
+export const getOrderDetailsById = async (orderId, userId) => {
+  // Get order information
+  const orderResult = await pool.query(
+    `SELECT
+       id,
+       user_id,
+       total_amount,
+       status,
+       shipping_address,
+       created_at
+     FROM orders
+     WHERE id = $1 AND user_id = $2`,
+    [orderId, userId]
+  );
+
+  if (orderResult.rows.length === 0) {
+    return null;
+  }
+
+  const order = orderResult.rows[0];
+
+  // Get products belonging to this order
+  const itemsResult = await pool.query(
+    `SELECT
+       oi.product_id,
+       p.name,
+       p.image,
+       oi.quantity,
+       oi.price,
+       (oi.quantity * oi.price) AS subtotal
+     FROM order_items oi
+     JOIN products p ON p.id = oi.product_id
+     WHERE oi.order_id = $1
+     ORDER BY oi.id ASC`,
+    [orderId]
+  );
+
+  return {
+    ...order,
+    items: itemsResult.rows
+  };
+};
+
+
