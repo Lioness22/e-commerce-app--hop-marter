@@ -1,0 +1,31 @@
+
+@if (toast$ | async; as toast) {
+  <div class="toast-container position-fixed top-0 end-0 p-3">
+    <div
+      class="toast show border-0 shadow"
+      [class.text-bg-success]="toast.type === 'success'"
+      [class.text-bg-danger]="toast.type === 'error'"
+      [class.text-bg-warning]="toast.type === 'warning'"
+      [class.text-bg-info]="toast.type === 'info'">
+      <div class="d-flex align-items-center">
+        <div class="toast-body">
+          @if (toast.type === 'success') {
+            <i class="bi bi-check-circle-fill me-2"></i>
+          }
+          @if (toast.type === 'error') {
+            <i class="bi bi-exclamation-circle-fill me-2"></i>
+          }
+          {{ toast.message }}
+        </div>
+        <button
+          type="button"
+          class="btn-close me-2"
+          [class.btn-close-white]="toast.type !== 'warning'"
+          aria-label="Close"
+          (click)="toastService.clear()">
+        </button>
+      </div>
+    </div>
+  </div>
+}
+

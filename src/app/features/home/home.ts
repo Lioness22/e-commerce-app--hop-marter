@@ -1,50 +1,52 @@
-import { Component } from '@angular/core';
+
+import { Component, inject, ChangeDetectorRef } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { ProductService, Product } from '../../core/services/product';
+import { catchError, finalize, of } from 'rxjs';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [],
+  imports: [CommonModule, RouterLink],
   templateUrl: './home.html',
   styleUrl: './home.css'
 })
 export class Home {
+  private productService = inject(ProductService);
+  private cdr = inject(ChangeDetectorRef);
 
-  categories = [
-    'Laptops',
-    'Mobiles',
-    'Headphones',
-    'Accessories'
-  ];
+  products: Product[] = [];
+  loading = false;
+  errorMessage = '';
+  categories: string[] = [
+  'Laptops',
+  'Mobiles',
+  'Headphones',
+  'Accessories'
+];
+  ngOnInit(): void {
+    this.loadProducts();
+  }
 
-  products = [
-    {
-      id: 1,
-      name: 'Premium Laptop',
-      price: 65000,
-      category: 'Laptops',
-      image: '/assets/images/laptops.jpg'
-    },
-    {
-      id: 2,
-      name: 'Smartphone Pro',
-      price: 35000,
-      category: 'Mobiles',
-      image: '/assets/images/iphones.jpg'
-    },
-    {
-      id: 3,
-      name: 'Wireless Headphones',
-      price: 4500,
-      category: 'Headphones',
-      image: '/assets/images/headphones.jpg'
-    },
-    {
-      id: 4,
-      name: 'Smart Watch',
-      price: 8000,
-      category: 'Accessories',
-      image: '/assets/images/watches.jpg'
-    }
-  ];
+  loadProducts(): void {
+    this.loading = true;
+    this.errorMessage = '';
 
+    this.productService.getProducts().pipe(
+      catchError((error) => {
+        console.error('Home products error:', error);
+        this.errorMessage = 'Unable to load products. Please try again.';
+        return of({ success: false, count: 0, data: [] });
+      }),
+      finalize(() => {
+        this.loading = false;
+        this.cdr.detectChanges();
+      })
+    ).subscribe((response) => {
+      if (response.success) {
+        this.products = response.data.slice(0, 4);
+      }
+    });
+  }
 }

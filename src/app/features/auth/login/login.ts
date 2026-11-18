@@ -9,6 +9,7 @@ import {
 
 import { Router, RouterLink } from '@angular/router';
 import { Auth } from '../../../core/services/auth';
+import { ToastService } from '../../../core/services/toast';
 
 
 @Component({
@@ -23,6 +24,7 @@ export class Login {
   private fb = inject(FormBuilder);
   private router = inject(Router);
   private authService = inject(Auth);
+  private toastService = inject(ToastService);
 
   showPassword = false;
   submitted = false;
@@ -48,7 +50,9 @@ export class Login {
       next: (response) => {
         this.loading = false;
         console.log('Login successful:', response);
-        alert('Login successful! Welcome to ShopSmart AI.');
+        this.toastService.success(
+  `Login successful! Welcome to ShopSmart AI.`
+);
         this.router.navigate(['/']);
       },
       error: (error) => {

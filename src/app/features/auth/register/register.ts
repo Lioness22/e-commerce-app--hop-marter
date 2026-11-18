@@ -11,6 +11,7 @@ import {
 } from '@angular/forms';
 
 import { Router, RouterLink } from '@angular/router';
+import { ToastService } from '../../../core/services/toast';
 
 @Component({
   selector: 'app-register',
@@ -24,10 +25,9 @@ export class Register {
   private fb = inject(FormBuilder);
   private router = inject(Router);
   private http = inject(HttpClient);
-
+  private toastService = inject(ToastService);
   showPassword = false;
   loading = false;
-
   registerForm = this.fb.group({
     fullName: ['', Validators.required],
     email: ['', [Validators.required, Validators.email]],
@@ -43,21 +43,17 @@ export class Register {
 
     const password = control.get('password')?.value;
     const confirmPassword = control.get('confirmPassword')?.value;
-
     return password === confirmPassword
       ? null
       : { passwordMismatch: true };
   }
 
   onRegister(): void {
-
     if (this.registerForm.invalid) {
       this.registerForm.markAllAsTouched();
       return;
     }
-
     this.loading = true;
-
     const userData = {
       fullName: this.registerForm.value.fullName,
       email: this.registerForm.value.email,
@@ -68,29 +64,20 @@ export class Register {
       'http://localhost:5000/api/users/register',
       userData
     ).subscribe({
-
       next: (response) => {
         this.loading = false;
-
-        alert('Registration successful!');
-
+        this.toastService.success('Registration successful! Welcome to ShopSmart AI.');
         console.log('Registration response:', response);
-
         this.registerForm.reset();
-
         this.router.navigate(['/login']);
       },
-
       error: (error) => {
         this.loading = false;
-
         console.error('Registration error:', error);
-
-        alert(
+        this.toastService.error(
           error.error?.message || 'Registration failed. Please try again.'
         );
       }
-
     });
   }
 }

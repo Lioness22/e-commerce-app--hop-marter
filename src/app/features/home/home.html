@@ -18,14 +18,14 @@
           shopping assistance.
         </p>
 
-        <button class="btn btn-primary btn-lg mt-3">
+        <button class="btn btn-primary btn-lg mt-3"[routerLink]="['/products']">
           Explore Products
         </button>
       </div>
 
       <div class="col-md-5 text-center">
         <img
-          src="/assets/images/commerce.jpg"
+          src="/assets/images/e-commerce.jpg"
           class="img-fluid rounded"
           alt="ShopSmart products">
       </div>
@@ -77,9 +77,14 @@
               ₹{{ product.price }}
             </h5>
 
-            <button class="btn btn-outline-primary w-100">
+            <!-- <button class="btn btn-outline-primary w-100">
               View Product
-            </button>
+            </button> -->
+            <button
+  class="btn btn-outline-primary w-100"
+  [routerLink]="['/products', product.id]">
+  View Product
+</button>
           </div>
 
         </div>

@@ -19,18 +19,16 @@ import { map } from 'rxjs';
   styleUrl: './checkout.css'
 })
 export class Checkout {
-
   private fb = inject(FormBuilder);
   private router = inject(Router);
   private orderService = inject(Order);
-
+  private toastTimeout?: ReturnType<typeof setTimeout>;
+  showToast = false;
+  toastMessage = '';
   cartService = inject(CartService);
-
   cartItems$ = this.cartService.cartItems$;
-
   loading = false;
   errorMessage = '';
-
   totalPrice$ = this.cartItems$.pipe(
     map(items =>
       items.reduce(
@@ -72,7 +70,6 @@ export class Checkout {
     if (this.loading) {
       return;
     }
-
     this.errorMessage = '';
 
     // Validate checkout form
@@ -80,20 +77,16 @@ export class Checkout {
       this.checkoutForm.markAllAsTouched();
       return;
     }
-
     const cartItems = this.cartService.cartItems;
-
     // Validate empty cart
     if (cartItems.length === 0) {
       this.errorMessage = 'Your cart is empty. Please add products before checkout.';
       return;
     }
-
     // Validate stock availability
     const invalidStockItem = cartItems.find(
       item => item.quantity > item.stock || item.stock <= 0
     );
-
     if (invalidStockItem) {
       this.errorMessage =
         `Only ${invalidStockItem.stock} units of ${invalidStockItem.name} are available. Please update your cart.`;
@@ -120,35 +113,40 @@ export class Checkout {
     };
 
     this.loading = true;
-
     this.orderService.placeOrder(orderData).subscribe({
-
       next: (response) => {
-
         this.loading = false;
-
         // Clear cart after successful order
         cartItems.forEach(item => {
           this.cartService.removeFromCart(item.id);
         });
-
-        alert(
-          `Order placed successfully! Order ID: ${response.data.id}`
-        );
-
-        this.router.navigate(['/']);
+       this.showSuccessToast(
+  `Order placed successfully! Order ID: ${response.data.id}`
+);
+setTimeout(() => {
+  this.router.navigate(['/']);
+}, 4000);    
       },
-
+     
       error: (error) => {
-
         this.loading = false;
-
         this.errorMessage =
           error.error?.message ||
           'Unable to place your order. Please try again.';
-
         console.error('Order creation error:', error);
       }
     });
   }
+  showSuccessToast(message: string): void {
+  this.toastMessage = message;
+  this.showToast = true;
+
+  if (this.toastTimeout) {
+    clearTimeout(this.toastTimeout);
+  }
+
+  this.toastTimeout = setTimeout(() => {
+    this.showToast = false;
+  }, 4000);
+}
 }

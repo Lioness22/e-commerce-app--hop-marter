@@ -59,9 +59,6 @@
                 <p class="mt-3">
                     Subtotal: ₹{{ product.price * quantity }}
                 </p>
-                <button class="btn btn-primary" (click)="addToCart()">
-                    Add to Cart
-                </button>
                 <button class="btn btn-primary mt-3 me-2" (click)="addToCart()">
                     Add to Cart
                 </button>
@@ -79,12 +76,12 @@
         </div>
         }
     </div>
-    <h2>{{ product.name }}</h2>
+    <!-- <h2>{{ product.name }}</h2>
     <p>{{ product.description }}</p>
     <h4>₹{{ product.price }}</h4>
     <button class="btn btn-primary" [disabled]="!product || product.stock === 0 || quantity > product.stock"
         (click)="addToCart()">
         Add to Cart
-    </button>
+    </button> -->
     }
 </div>
