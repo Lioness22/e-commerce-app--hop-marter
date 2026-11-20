@@ -18,7 +18,7 @@ export class AiService {
 
   private http = inject(HttpClient);
 
-  private apiUrl = 'http://localhost:5000/api/ai';
+  private apiUrl = 'https://e-commerce-app-hop-marter-3.onrender.com/api/api/ai';
 
   sendMessage(message: string): Observable<AIChatResponse> {
     return this.http.post<AIChatResponse>(

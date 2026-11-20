@@ -21,7 +21,7 @@ export interface LoginResponse {
 export class Auth {
   private http = inject(HttpClient);
 
-  private apiUrl = 'http://localhost:5000/api/users';
+  private apiUrl = 'https://e-commerce-app-hop-marter-3.onrender.com/api/api/users';
 
   login(email: string, password: string): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(

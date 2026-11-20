@@ -61,7 +61,7 @@ export class Register {
     };
 
     this.http.post(
-      'http://localhost:5000/api/users/register',
+      'https://e-commerce-app-hop-marter-3.onrender.com/api/api/users/register',
       userData
     ).subscribe({
       next: (response) => {

@@ -60,7 +60,7 @@ export interface OrderDetails {
 export class Order {
 
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:5000/api/orders';
+  private apiUrl = 'https://e-commerce-app-hop-marter-3.onrender.com/api/api/orders';
 
   // Place a new order
   placeOrder(orderData: OrderRequest): Observable<OrderResponse> {

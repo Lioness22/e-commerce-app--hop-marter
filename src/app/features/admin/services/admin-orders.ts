@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
 })
 export class AdminOrders {
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:5000/api/admin';
+  private apiUrl = 'https://e-commerce-app-hop-marter-3.onrender.com/api/api/admin';
   getAllOrders(): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/orders`);
   }

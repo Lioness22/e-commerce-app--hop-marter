@@ -26,7 +26,7 @@ export class ProductService {
 
   private http = inject(HttpClient);
 
-  private apiUrl = 'http://localhost:5000/api/products';
+  private apiUrl = 'https://e-commerce-app-hop-marter-3.onrender.com/api/api/products';
 
   getProducts(): Observable<ProductApiResponse> {
     return this.http.get<ProductApiResponse>(this.apiUrl);
