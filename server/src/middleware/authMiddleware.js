@@ -1,27 +1,39 @@
 
 import jwt from 'jsonwebtoken';
+
 export const verifyToken = (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
-    // Check whether the token exists
+
+    console.log('JWT_SECRET loaded:', Boolean(process.env.JWT_SECRET));
+    console.log('Authorization header present:', Boolean(authHeader));
+
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return res.status(401).json({
         success: false,
         message: 'Access denied. No token provided.'
       });
     }
-    // Extract the JWT
+
     const token = authHeader.split(' ')[1];
-    // Verify the JWT
+
+    console.log('Token present:', Boolean(token));
+
     const decoded = jwt.verify(
       token,
       process.env.JWT_SECRET
     );
-    // Attach authenticated user information to request
+
     req.user = decoded;
-    // Continue to the controller
+
+    console.log('JWT verification successful');
+
     next();
+
   } catch (error) {
+    console.error('JWT Verification Error:', error.name);
+    console.error('JWT Error Message:', error.message);
+
     return res.status(401).json({
       success: false,
       message: 'Invalid or expired token.'

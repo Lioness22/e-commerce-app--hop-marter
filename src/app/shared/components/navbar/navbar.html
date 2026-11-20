@@ -22,7 +22,39 @@
         <li class="nav-item">
           <a class="nav-link" routerLink="/products">Products</a>
         </li>
+        <li class="nav-item">
+          
+<a routerLink="/ai-chat" class="nav-link">
+  <i class="bi bi-robot"></i>
+  ShopSmart AI
+</a>
+
+        </li>
       </ul>
+
+<!-- Admin Navigation -->
+<ng-container *ngIf="auth.isAdmin()">
+
+  <li class="nav-item">
+    <a class="nav-link"
+       routerLink="/admin"
+       routerLinkActive="active">
+      <i class="bi bi-speedometer2"></i>
+      Admin Dashboard
+    </a>
+  </li>
+
+  <li class="nav-item">
+    <a class="nav-link"
+       routerLink="/admin/orders"
+       routerLinkActive="active">
+      <i class="bi bi-bag-check"></i>
+      Admin Orders
+    </a>
+  </li>
+
+</ng-container>
+
       <div class="d-flex gap-3 align-items-center">
         <button class="btn btn-outline-primary" routerLink="/cart">
           <i class="bi bi-cart"></i> 

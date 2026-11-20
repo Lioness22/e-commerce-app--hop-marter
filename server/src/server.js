@@ -33,6 +33,8 @@ import productRoutes from './routes/productRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import { verifyToken } from './middleware/authMiddleware.js';
 import orderRoutes from './routes/orderRoutes.js';
+import aiRoutes from './ai/routes/aiRoutes.js';
+import adminRoutes from './routes/adminRoutes.js';
 dotenv.config();
 
 const app = express();
@@ -41,6 +43,8 @@ app.use(cors());
 app.use(express.json());
 app.use('/api/products', productRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/admin', adminRoutes);
+app.use('/api/ai', aiRoutes);
 app.get('/api/health', (req, res) => {
   res.json({
     success: true,

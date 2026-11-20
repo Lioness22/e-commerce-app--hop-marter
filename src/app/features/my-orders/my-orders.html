@@ -2,7 +2,14 @@
 <div class="container py-5">
   <!-- Page Heading -->
   <div class="mb-4">
-    <h2 class="fw-bold">My Orders</h2>
+    <h2 class="fw-bold">My Orders     <button
+  class="btn btn-outline-primary"
+  (click)="loadOrders()"
+  [disabled]="loading">
+  <i class="bi bi-arrow-clockwise"></i>
+  Refresh Orders
+</button></h2>
+
     <p class="text-muted">
       Track and manage your recent purchases.
     </p>
@@ -45,13 +52,17 @@
                   <h5 class="text-primary fw-bold">
                     ₹{{ order.total_amount }}
                   </h5>
-                  <span
-                    class="badge"
-                    [class.bg-warning]="order.status === 'pending'"
-                    [class.bg-success]="order.status === 'approved'"
-                    [class.bg-danger]="order.status === 'rejected'">
-                    {{ order.status | titlecase }}
-                  </span>
+                <span
+  class="badge"
+  [ngClass]="{
+    'bg-warning text-dark': order.status === 'pending',
+    'bg-info text-dark': order.status === 'processing',
+    'bg-primary': order.status === 'shipped',
+    'bg-success': order.status === 'delivered',
+    'bg-danger': order.status === 'cancelled'
+  }">
+  {{ order.status | titlecase }}
+</span>
                 </div>
               </div>
               <hr>

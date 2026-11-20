@@ -1,0 +1,57 @@
+
+<div class="chat-container">
+  <!-- Chat Header -->
+  <div class="chat-header">
+    <div class="bot-avatar">AI</div>
+    <div>
+      <h3>ShopSmart AI</h3>
+      <span>Shopping Assistant</span>
+    </div>
+    <span class="online-status">● Online</span>
+  </div>
+  <!-- Chat Messages -->
+  <div class="chat-body" #chatBody>
+    @for (message of messages; track $index) {
+      <div class="message"
+           [class.user-message]="message.sender === 'user'"
+           [class.bot-message]="message.sender === 'bot'">
+        @if (message.sender === 'bot') {
+          <div class="message-avatar">AI</div>
+        }
+        <div class="message-content">
+          <p>{{ message.text }}</p>
+        </div>
+
+      </div>
+    }
+    <!-- Loading Indicator -->
+    @if (isLoading) {
+      <div class="message bot-message">
+        <div class="message-avatar">AI</div>
+        <div class="message-content">
+          <p>ShopSmart AI is typing...</p>
+        </div>
+      </div>
+    }
+
+  </div>
+  <!-- Message Input -->
+  <div class="chat-input-area">
+    <input
+      type="text"
+      [(ngModel)]="userMessage"
+      (keyup.enter)="sendMessage()"
+      placeholder="Ask me about products..."
+      class="chat-input"
+      [disabled]="isLoading"
+    />
+    <button
+      type="button"
+      class="send-button"
+      (click)="sendMessage()"
+      [disabled]="isLoading || !userMessage.trim()"
+    >
+      Send
+    </button>
+  </div>
+</div>

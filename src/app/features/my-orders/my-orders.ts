@@ -23,30 +23,27 @@ export class MyOrders implements OnInit {
   ngOnInit(): void {
     this.loadOrders();
   }
-  loadOrders(): void {
-  
-this.loading = true;
-this.errorMessage = '';
+ loadOrders(): void {
+  this.loading = true;
+  this.errorMessage = '';
 
-this.orderService.getMyOrders().pipe(
-  catchError((error) => {
-    console.error('Error fetching orders:', error);
+  this.orderService.getMyOrders().pipe(
+    catchError((error) => {
+      console.error('Error fetching orders:', error);
 
-    this.errorMessage =
-      error.error?.message || 'Unable to load your orders.';
+      this.errorMessage =
+        error.error?.message || 'Unable to load your orders.';
 
-    return of({ success: false, data: [] });
-  }),
-
-  finalize(() => {
-    this.loading = false;
-    this.cdr.detectChanges();
-  })
-).subscribe((response) => {
-  if (response.success) {
-    this.orders = response.data;
-    console.log('My Orders:', this.orders);
-  }
-});
-  }
+      return of({ success: false, data: [] });
+    }),
+    finalize(() => {
+      this.loading = false;
+      this.cdr.detectChanges();
+    })
+  ).subscribe((response) => {
+    if (response.success) {
+      this.orders = response.data;
+    }
+  });
+}
 }

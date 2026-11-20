@@ -1,0 +1,43 @@
+
+.details-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 24px;
+  height: 100%;
+  border: 1px solid #e9ecef;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.details-card h5 {
+  font-weight: 600;
+  color: #212529;
+}
+
+.details-card p {
+  color: #495057;
+  margin-bottom: 12px;
+}
+
+.product-image {
+  width: 55px;
+  height: 55px;
+  object-fit: contain;
+  border-radius: 8px;
+  border: 1px solid #eee;
+  padding: 4px;
+  background: #fff;
+}
+
+.table th {
+  font-size: 14px;
+  color: #6c757d;
+  white-space: nowrap;
+}
+.table td {
+  font-size: 14px;
+}
+@media (max-width: 576px) {
+  .details-card {
+    padding: 16px;
+  }
+}

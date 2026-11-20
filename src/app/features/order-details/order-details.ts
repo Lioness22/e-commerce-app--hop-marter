@@ -21,36 +21,24 @@ export class OrderDetailsComponent implements OnInit {
   errorMessage = '';
 
   ngOnInit(): void {
-    const orderId = Number(this.route.snapshot.paramMap.get('id'));
+   this.route.paramMap.subscribe(params => {
+    const orderId = Number(params.get('id'));
+
     if (!Number.isSafeInteger(orderId) || orderId <= 0) {
-        this.loading = false;
-        this.errorMessage = 'Invalid order ID.';
+      this.order = null;
+      this.loading = false;
+      this.errorMessage = 'Invalid order ID.';
       return;
     }
+
     this.loadOrderDetails(orderId);
+  });
   }
 
-  // loadOrderDetails(orderId: number): void {
-  //   this.loading = true;
-  //   this.errorMessage = '';
-  //   this.orderService.getOrderDetails(orderId).subscribe({
-  //     next: (response) => {
-  //       this.loading = false;
-  //       this.order = response.data;
-  //       console.log('Order details:', this.order);
-  //     },
-  //     error: (error) => {
-  //       console.error('Order details error:', error);
-  //         this.loading = false;
-  //       this.errorMessage =
-  //         error.error?.message || 'Unable to load order details.';
-        
-  //     }
-  //   });
-  // }
   loadOrderDetails(orderId: number): void {
   this.loading = true;
   this.errorMessage = '';
+  this.order = null;
 
   this.orderService.getOrderDetails(orderId)
     .pipe(

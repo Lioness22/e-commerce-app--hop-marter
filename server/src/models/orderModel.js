@@ -130,13 +130,10 @@ export const getOrderDetailsById = async (orderId, userId) => {
      WHERE id = $1 AND user_id = $2`,
     [orderId, userId]
   );
-
   if (orderResult.rows.length === 0) {
     return null;
   }
-
   const order = orderResult.rows[0];
-
   // Get products belonging to this order
   const itemsResult = await pool.query(
     `SELECT
@@ -152,11 +149,105 @@ export const getOrderDetailsById = async (orderId, userId) => {
      ORDER BY oi.id ASC`,
     [orderId]
   );
-
   return {
     ...order,
     items: itemsResult.rows
   };
 };
+
+export const getAdminDashboardStats = async () => {
+  const result = await pool.query(`
+    SELECT
+      (SELECT COUNT(*) FROM orders)::INTEGER AS total_orders,
+      (SELECT COALESCE(SUM(total_amount), 0)
+       FROM orders
+       WHERE status = 'delivered') AS total_sales,
+      (SELECT COUNT(*)
+       FROM orders
+       WHERE status = 'pending')::INTEGER AS pending_orders,
+      (SELECT COUNT(*)
+       FROM users
+       WHERE role = 'customer')::INTEGER AS total_customers,
+      (SELECT COUNT(*)
+       FROM products)::INTEGER AS total_products
+  `);
+  return result.rows[0];
+};
+
+
+export const getAllOrdersForAdmin = async () => {
+  const result = await pool.query(`
+    SELECT
+      o.id,
+      o.user_id,
+      u.full_name AS customer_name,
+      u.email AS customer_email,
+      o.total_amount,
+      o.status,
+      o.shipping_address,
+      o.created_at,
+      COUNT(oi.id)::INTEGER AS total_items
+    FROM orders o
+    JOIN users u ON u.id = o.user_id
+    LEFT JOIN order_items oi ON oi.order_id = o.id
+    GROUP BY o.id, u.id
+    ORDER BY o.created_at DESC
+  `);
+
+  return result.rows;
+};
+
+export const updateOrderStatus = async (orderId, status) => {
+  const result = await pool.query(
+    `UPDATE orders
+     SET status = $1
+     WHERE id = $2
+     RETURNING *`,
+    [status, orderId]
+  );
+  return result.rows[0] || null;
+};
+
+export const getOrderDetailsForAdmin = async (orderId) => {
+  const orderResult = await pool.query(
+    `SELECT
+       o.id,
+       o.user_id,
+       u.full_name AS customer_name,
+       u.email AS customer_email,
+       o.total_amount,
+       o.status,
+       o.shipping_address,
+       o.created_at
+     FROM orders o
+     JOIN users u ON u.id = o.user_id
+     WHERE o.id = $1`,
+    [orderId]
+  );
+
+  if (orderResult.rows.length === 0) {
+    return null;
+  }
+  const order = orderResult.rows[0];
+  const itemsResult = await pool.query(
+    `SELECT
+       oi.product_id,
+       p.name AS product_name,
+       p.image AS product_image,
+       oi.quantity,
+       oi.price,
+       (oi.quantity * oi.price) AS subtotal
+     FROM order_items oi
+     JOIN products p ON p.id = oi.product_id
+     WHERE oi.order_id = $1
+     ORDER BY oi.id ASC`,
+    [orderId]
+  );
+  return {
+    ...order,
+    items: itemsResult.rows
+  };
+};
+
 
 
