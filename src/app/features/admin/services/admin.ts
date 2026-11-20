@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 })
 export class AdminService {
   private http = inject(HttpClient);
-  private apiUrl = 'https://e-commerce-app-hop-marter-3.onrender.com/api/api/admin';
+  private apiUrl = 'https://e-commerce-app-hop-marter-3.onrender.com/api/admin';
   getDashboardStats(): Observable<any> {
     return this.http.get<any>(
       `${this.apiUrl}/dashboard`
